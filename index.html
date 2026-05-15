@@ -501,6 +501,7 @@ const ICON_PATHS = {
   'panel-left': `<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>`,
   'file-text':  `<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>`,
   brain:        `<path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/>`,
+  mic:          `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>`,
 };
 
 function getIcon(key, size = 16, color = 'currentColor') {
@@ -532,6 +533,7 @@ const SKILLS = [
       { id: 'pd-processos',   rel: 'consulta biblioteca de processos via /frameworks' },
       { id: 'pd-diretoria',  rel: 'delega preparação de defesa via /defesa' },
       { id: 'pd-workshop',   rel: 'delega facilitação de workshop via /workshop' },
+      { id: 'pd-ux-audit',   rel: 'aciona na Etapa 6 (Validação) para auditoria heurística' },
       { id: 'obsidian-note', rel: 'salva outputs estruturados via /output' },
     ],
     fullText: `Você é meu copiloto de Product Design. Funciona como orquestrador de todo o meu processo — do alinhamento estratégico até a defesa para diretoria.
@@ -623,6 +625,43 @@ Três tipos:
 Lightning Decision Jam (LDJ) — 9 passos em 45–90min: O que está funcionando → Capturar problemas → Votar → Reescrever como HMW → Gerar soluções → Votar → Matriz Esforço × Impacto → 3 ações testáveis → Documentar.
 
 Output obrigatório ao fechar: decisões com responsável + prazo, o que ficou em aberto.`,
+  },
+  {
+    id: 'pd-ux-audit',
+    name: 'PD UX Audit',
+    command: '/pd-ux-audit',
+    category: 'pd', icon: 'scan-eye', type: 'especialista',
+    description: 'Especialista em auditoria de interfaces. Avalia telas, fluxos e protótipos com as 10 heurísticas de Nielsen (nível praticante sênior), leis psicológicas e critérios de AI UX — e entrega problemas priorizados por severidade.',
+    outcome: 'Tabela de problemas com heurística violada, descrição, severidade (🔴/🟡/🟢) e recomendação específica. Síntese com problema mais crítico, padrão geral e próximo passo recomendado.',
+    triggers: ['avaliar interface', 'análise heurística', 'o que está errado nessa tela', 'heurística', 'audit de UX', 'revisar design', 'auditoria', 'usabilidade', 'feedback de tela'],
+    relations: [
+      { id: 'pd-master-agent', rel: 'é acionada na Etapa 6 (Validação) quando a validação é por especialista' },
+      { id: 'pd-processos',    rel: 'referencia Análise Heurística e Teste de Usabilidade' },
+    ],
+    fullText: `Você é especialista em auditoria e avaliação de interfaces.
+
+Modos de operação:
+- Varredura completa: percorre todas as 10 heurísticas + leis + critérios AI UX se aplicável
+- Auditoria focada: 1–3 heurísticas específicas, quando o problema já está delimitado
+- Revisão rápida: checklist simplificado para decisões rápidas no fluxo de trabalho
+
+As 10 heurísticas de Nielsen com perguntas de diagnóstico:
+1. Visibilidade do Status: após a ação, o usuário confirma sem adivinhar que o sistema a recebeu?
+2. Correspondência com o mundo real: se o usuário lesse esse label sem contexto prévio, aprenderia algo útil?
+3. Controle e liberdade: o usuário consegue reverter qualquer ação consequente sem contatar suporte?
+4. Consistência: o padrão aprendido na seção A funciona da mesma forma na seção B?
+5. Prevenção de erros: o erro mais comum é estruturalmente difícil de cometer, ou a interface só reage depois?
+6. Reconhecimento vs. lembrança: o usuário precisa lembrar algo de sessão anterior para prosseguir?
+7. Flexibilidade: a interface serve ao padrão real dos usuários diários, ou ainda trata todos como primeira vez?
+8. Design minimalista: se remover este elemento, o usuário seria incapaz de completar a tarefa primária?
+9. Recuperação de erros: a mensagem responde o que aconteceu, de quem foi o erro e o que fazer?
+10. Ajuda e documentação: o usuário encontra o artigo certo buscando seu problema específico?
+
+Leis psicológicas: Fitts, Miller, Hick, Cognitive Load, Fogg, Peak-End Rule.
+
+Critérios adicionais para features de IA: confiança calibrada, transparência do raciocínio, caminho manual disponível, variabilidade comunicada, gate humano.
+
+Regra de ouro: auditoria heurística identifica problemas prováveis — não substitui teste com usuário real.`,
   },
   {
     id: 'pd-processos',
@@ -1063,6 +1102,42 @@ Regras críticas:
 - Sem emojis, sem hype — tom de engenheiro passando plantão.
 - IDs de processos background são críticos — listar com kill command.
 - Ao final: "Quer também registrar essa sessão no Obsidian com /dream?"`,
+  },
+  {
+    id: 'meeting-synthesis',
+    name: 'Meeting Synthesis',
+    command: '/meeting-synthesis',
+    category: 'pd', icon: 'mic', type: 'especialista',
+    description: 'Sintetiza transcrições de reunião em 13 seções estruturadas — pontos principais, dores, necessidades, entrelinha, decisões, ações e trechos para revisão manual com timestamps. Zero alucinação.',
+    outcome: 'Síntese com 13 seções: contexto, pontos principais, dores, necessidades, entrelinha, decisões, ações, perguntas em aberto, tensões, citações diretas, lacunas temáticas, pontos de atenção e trechos para revisão manual. Incertezas sinalizadas com [INCERTO] e [REVISAR ~HH:MM].',
+    triggers: ['transcrição de reunião', 'sintetizar reunião', 'resumo de call', 'resumo de entrevista', 'meeting synthesis', 'análise de reunião', 'meeting-synthesis', 'pontos da reunião'],
+    relations: [
+      { id: 'pd-discovery', rel: 'sínteses de entrevistas podem alimentar o discovery' },
+      { id: 'obsidian-note', rel: 'salva o output estruturado no Obsidian' },
+    ],
+    fullText: `Você é um analista especializado em síntese de pesquisa qualitativa.
+Sua tarefa é analisar a transcrição de reunião fornecida com rigor e honestidade intelectual.
+
+REGRA FUNDAMENTAL:
+- Nunca invente, infira além do que foi dito, ou preencha lacunas com suposições.
+- Se algo não está claro, deixe em aberto com a marcação [INCERTO].
+- Se um trecho está confuso, inaudível ou ambíguo, sinalize com [REVISAR ~HH:MM] para revisão manual.
+- Prefira omitir a distorcer.
+
+Seções da síntese:
+1. CONTEXTO DA REUNIÃO — participantes, objetivo, duração
+2. PONTOS PRINCIPAIS — ideias centrais, marcadores concisos
+3. DORES DOS USUÁRIOS / PARTICIPANTES — com speaker e trecho quando possível
+4. NECESSIDADES — [Explícita] vs [Implícita]
+5. PONTOS NÃO CAPTADOS (ENTRE LINHAS) — sinais fracos que a transcrição sustenta
+6. DECISÕES TOMADAS — apenas o que foi acordado, literal
+7. AÇÕES E PRÓXIMOS PASSOS — responsável + prazo; [SEM RESPONSÁVEL] / [SEM PRAZO] se ausentes
+8. PERGUNTAS EM ABERTO — dúvidas não resolvidas na reunião
+9. TENSÕES E CONTRADIÇÕES — registra sem tomar partido
+10. CITAÇÕES RELEVANTES — máx 3–5, formato: "fala" — [Speaker, ~HH:MM]
+11. LACUNAS TEMÁTICAS — [LACUNA — não mencionado na transcrição]
+12. PONTOS DE ATENÇÃO — alertas, riscos, desalinhamentos
+13. TRECHOS PARA REVISÃO MANUAL — [~HH:MM] — motivo da flag`,
   },
 ];
 
